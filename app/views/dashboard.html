@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — AdminKit</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+  <div class="app-layout">
+
+    <!-- ── Sidebar ─────────────────────────────────────────────────── -->
+    <aside class="sidebar" aria-label="Sidebar navigation">
+      <div class="sidebar-header">
+        <div class="sidebar-logo-mark" aria-hidden="true">A</div>
+        <span class="sidebar-logo-name">AdminKit</span>
+      </div>
+
+      <nav class="sidebar-nav" aria-label="Main navigation">
+        <span class="nav-section-label">Workspace</span>
+
+        <a href="#" class="nav-item active" aria-current="page">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Dashboard
+        </a>
+
+        <a href="/controls" class="nav-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="3"/><path d="M11 8h10M3 8H1"/><circle cx="16" cy="16" r="3"/><path d="M19 16h2M11 16H1"/></svg>
+          Playground
+        </a>
+
+        <a href="/reports" class="nav-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          Reports
+        </a>
+
+        <span class="nav-section-label">Settings</span>
+
+        <a href="#" class="nav-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+          Settings
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-badge">
+          <div class="user-avatar" id="user-avatar" aria-hidden="true">A</div>
+          <div class="user-info">
+            <div class="user-name" id="user-name-display">admin</div>
+            <div class="user-role">Administrator</div>
+          </div>
+          <button
+            class="btn-icon"
+            id="logout-button"
+            title="Sign out"
+            aria-label="Sign out"
+            data-testid="logout-button"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ── Main content ────────────────────────────────────────────── -->
+    <div class="main-content">
+
+      <header class="topbar">
+        <div>
+          <div class="page-title">User Management</div>
+          <div class="page-subtitle">Manage team members and their access levels</div>
+        </div>
+        <button
+          class="btn btn-primary"
+          id="add-user-button"
+          data-testid="add-user-button"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add user
+        </button>
+      </header>
+
+      <div class="content-area">
+
+        <!-- Stats -->
+        <div class="stats-strip" role="region" aria-label="Summary statistics">
+          <div class="stat-card">
+            <div class="stat-label">Total users</div>
+            <div class="stat-value" id="stat-total" data-testid="stat-total">—</div>
+            <div class="stat-sub">across all roles</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Active</div>
+            <div class="stat-value stat-active" id="stat-active" data-testid="stat-active">—</div>
+            <div class="stat-sub">currently enabled</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Inactive</div>
+            <div class="stat-value stat-inactive" id="stat-inactive" data-testid="stat-inactive">—</div>
+            <div class="stat-sub">access suspended</div>
+          </div>
+        </div>
+
+        <!-- Table -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">All Users</span>
+            <div class="card-actions">
+              <input
+                type="text"
+                id="search-input"
+                data-testid="search-input"
+                placeholder="Search by name or email…"
+                class="form-control"
+                style="width: 220px;"
+                aria-label="Search users"
+              />
+              <select
+                id="role-filter"
+                data-testid="role-filter"
+                class="form-control form-control-select"
+                style="width: 140px;"
+                aria-label="Filter by role"
+              >
+                <option value="">All roles</option>
+                <option value="Admin">Admin</option>
+                <option value="Editor">Editor</option>
+                <option value="Viewer">Viewer</option>
+              </select>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table aria-label="Users table" data-testid="user-table">
+              <thead>
+                <tr>
+                  <th scope="col">Name</th>
+                  <th scope="col">Email</th>
+                  <th scope="col">Role</th>
+                  <th scope="col">Status</th>
+                  <th scope="col"><span class="sr-only">Actions</span></th>
+                </tr>
+              </thead>
+              <tbody id="user-tbody">
+                <tr>
+                  <td colspan="5">
+                    <div class="empty-state">
+                      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                      <p>Loading users…</p>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Add / Edit User Modal ────────────────────────────────────── -->
+  <div
+    id="user-modal-backdrop"
+    class="modal-backdrop hidden"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="modal-title"
+    data-testid="user-modal"
+  >
+    <div class="modal" id="user-modal">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modal-title">Add user</h2>
+        <button class="modal-close" id="modal-close-btn" aria-label="Close dialog" data-testid="close-modal-button">&#x2715;</button>
+      </div>
+      <div class="modal-body">
+        <div
+          id="form-error"
+          class="alert alert-error hidden"
+          role="alert"
+          data-testid="form-error"
+        >
+          <span class="alert-icon" aria-hidden="true">⚠</span>
+          <span id="form-error-text">All fields are required.</span>
+        </div>
+
+        <form id="user-form" novalidate>
+          <div class="form-group">
+            <label for="user-name">Full name</label>
+            <input
+              id="user-name"
+              type="text"
+              class="form-control"
+              placeholder="Jane Smith"
+              required
+              data-testid="user-name-input"
+            />
+          </div>
+          <div class="form-group">
+            <label for="user-email">Email address</label>
+            <input
+              id="user-email"
+              type="email"
+              class="form-control"
+              placeholder="jane@acme.com"
+              required
+              data-testid="user-email-input"
+            />
+          </div>
+          <div class="form-group">
+            <label for="user-role">Role</label>
+            <select
+              id="user-role"
+              class="form-control form-control-select"
+              required
+              data-testid="user-role-select"
+            >
+              <option value="">Select a role</option>
+              <option value="Admin">Admin</option>
+              <option value="Editor">Editor</option>
+              <option value="Viewer">Viewer</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="user-status">Status</label>
+            <select id="user-status" class="form-control form-control-select">
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" id="cancel-button" data-testid="cancel-button">Cancel</button>
+        <button class="btn btn-primary" id="save-user-button" data-testid="save-user-button">Save user</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Confirm delete dialog ────────────────────────────────────── -->
+  <div
+    id="confirm-backdrop"
+    class="modal-backdrop hidden"
+    role="alertdialog"
+    aria-modal="true"
+    aria-labelledby="confirm-title"
+    aria-describedby="confirm-desc"
+  >
+    <div class="modal confirm-modal">
+      <div class="confirm-body">
+        <div class="confirm-icon" aria-hidden="true">🗑️</div>
+        <h3 id="confirm-title">Delete user?</h3>
+        <p id="confirm-desc">This action cannot be undone. The user will lose all access immediately.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" id="confirm-cancel">Cancel</button>
+        <button class="btn btn-danger" id="confirm-delete" data-testid="confirm-delete">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Toast container ──────────────────────────────────────────── -->
+  <div class="toast-container" id="toast-container" aria-live="polite" aria-atomic="false"></div>
+
+  <style>
+    .sr-only {
+      position: absolute; width: 1px; height: 1px;
+      padding: 0; margin: -1px; overflow: hidden;
+      clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+    }
+  </style>
+
+  <script src="/js/main.js"></script>
+</body>
+</html>

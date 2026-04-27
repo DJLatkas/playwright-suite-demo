@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Playground — AdminKit</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/styles.css" />
+  <style>
+    /* ── Controls grid ──────────────────────────────────────────────── */
+    .controls-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+    .controls-grid .card-full { grid-column: 1 / -1; }
+    @media (max-width: 768px) {
+      .controls-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── Card header ────────────────────────────────────────────────── */
+    .ctrl-card-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-bottom: 20px;
+    }
+
+    /* ── Range sliders ──────────────────────────────────────────────── */
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    .slider-row:last-child { margin-bottom: 0; }
+    .slider-label {
+      width: 90px;
+      font-size: 13px;
+      color: var(--color-text-muted);
+      flex-shrink: 0;
+    }
+    .slider-input {
+      flex: 1;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--color-border);
+      outline: none;
+      cursor: pointer;
+    }
+    .slider-input::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,.4);
+    }
+    .slider-input::-moz-range-thumb {
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      cursor: pointer;
+      border: none;
+    }
+    .slider-value {
+      width: 40px;
+      text-align: right;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--color-text);
+      flex-shrink: 0;
+    }
+
+    /* ── Toggle switches ────────────────────────────────────────────── */
+    .toggle-list { display: flex; flex-direction: column; gap: 16px; }
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .toggle-info { display: flex; flex-direction: column; gap: 2px; }
+    .toggle-name { font-size: 14px; font-weight: 500; color: var(--color-text); }
+    .toggle-desc { font-size: 12px; color: var(--color-text-muted); }
+    .toggle-switch {
+      width: 48px;
+      height: 26px;
+      border-radius: 13px;
+      background: var(--color-border);
+      border: none;
+      cursor: pointer;
+      position: relative;
+      transition: background .2s;
+      flex-shrink: 0;
+    }
+    .toggle-switch[aria-checked="true"] { background: var(--color-primary); }
+    .toggle-thumb {
+      position: absolute;
+      top: 3px; left: 3px;
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: #fff;
+      transition: transform .2s;
+      pointer-events: none;
+    }
+    .toggle-switch[aria-checked="true"] .toggle-thumb { transform: translateX(22px); }
+
+    /* ── Checkboxes ─────────────────────────────────────────────────── */
+    .checkbox-list { display: flex; flex-direction: column; gap: 12px; }
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      color: var(--color-text);
+    }
+    .checkbox-item input[type="checkbox"] {
+      width: 16px; height: 16px;
+      accent-color: var(--color-primary);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .checkbox-divider {
+      border: none;
+      border-top: 1px solid var(--color-border);
+      margin: 12px 0;
+    }
+    .checkbox-count {
+      font-size: 12px;
+      color: var(--color-text-muted);
+      margin-top: 12px;
+    }
+    .checkbox-count strong { color: var(--color-primary); }
+
+    /* ── Radio buttons ──────────────────────────────────────────────── */
+    .radio-group { margin-bottom: 20px; }
+    .radio-group:last-child { margin-bottom: 0; }
+    .radio-group-label {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--color-text-muted);
+      margin-bottom: 10px;
+    }
+    .radio-list { display: flex; flex-direction: column; gap: 10px; }
+    .radio-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      color: var(--color-text);
+    }
+    .radio-item input[type="radio"] {
+      width: 16px; height: 16px;
+      accent-color: var(--color-primary);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .radio-selection {
+      margin-top: 12px;
+      font-size: 12px;
+      color: var(--color-text-muted);
+    }
+    .radio-selection strong { color: var(--color-primary); }
+
+    /* ── Select dropdowns ───────────────────────────────────────────── */
+    .select-group { margin-bottom: 18px; }
+    .select-group:last-child { margin-bottom: 0; }
+    .select-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--color-text-muted);
+      margin-bottom: 8px;
+    }
+    .form-select {
+      width: 100%;
+      padding: 8px 12px;
+      background: var(--color-surface-2);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      color: var(--color-text);
+      font-family: var(--font);
+      font-size: 14px;
+      cursor: pointer;
+      outline: none;
+    }
+    .form-select:focus { border-color: var(--color-primary); }
+    .select-output {
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--color-text-muted);
+    }
+    .select-output strong { color: var(--color-primary); }
+
+    /* ── Textarea ───────────────────────────────────────────────────── */
+    .textarea-wrap { position: relative; }
+    .ctrl-textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 10px 12px;
+      background: var(--color-surface-2);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      color: var(--color-text);
+      font-family: var(--font);
+      font-size: 14px;
+      resize: vertical;
+      outline: none;
+      box-sizing: border-box;
+    }
+    .ctrl-textarea:focus { border-color: var(--color-primary); }
+    .char-bar-wrap {
+      margin-top: 8px;
+      height: 4px;
+      background: var(--color-border);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .char-bar-fill {
+      height: 100%;
+      background: var(--color-primary);
+      border-radius: 2px;
+      transition: width .1s, background .2s;
+      width: 0%;
+    }
+    .char-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--color-text-muted);
+      margin-top: 6px;
+    }
+    .char-warning-msg {
+      font-size: 12px;
+      color: var(--color-warning);
+      margin-top: 6px;
+      min-height: 18px;
+    }
+
+    /* ── Number stepper ─────────────────────────────────────────────── */
+    .stepper-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+    .stepper-controls {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+    .stepper-btn {
+      width: 44px; height: 44px;
+      background: var(--color-surface-2);
+      border: none;
+      color: var(--color-text);
+      font-size: 20px;
+      cursor: pointer;
+      transition: background .15s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .stepper-btn:hover { background: var(--color-border); }
+    .stepper-btn:disabled { opacity: .35; cursor: not-allowed; }
+    .stepper-display {
+      width: 64px; height: 44px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--color-text);
+      border-left: 1px solid var(--color-border);
+      border-right: 1px solid var(--color-border);
+    }
+    .stepper-label {
+      font-size: 12px;
+      color: var(--color-text-muted);
+      text-align: center;
+    }
+    .stepper-extra { width: 100%; display: flex; flex-direction: column; gap: 14px; }
+
+    /* ── Color picker ───────────────────────────────────────────────── */
+    .color-pick-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .color-pick-row label {
+      font-size: 13px;
+      color: var(--color-text-muted);
+      flex: 1;
+    }
+    input[type="color"] {
+      width: 44px; height: 36px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      background: var(--color-surface-2);
+      cursor: pointer;
+      padding: 2px;
+    }
+    .color-hex {
+      font-size: 13px;
+      font-family: monospace;
+      color: var(--color-text);
+      width: 70px;
+    }
+
+    /* ── Date / Time inputs ─────────────────────────────────────────── */
+    .date-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+    @media (max-width: 600px) { .date-grid { grid-template-columns: 1fr; } }
+    .date-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--color-text-muted);
+      margin-bottom: 8px;
+    }
+    .date-input {
+      width: 100%;
+      padding: 8px 10px;
+      background: var(--color-surface-2);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      color: var(--color-text);
+      font-family: var(--font);
+      font-size: 13px;
+      outline: none;
+      box-sizing: border-box;
+      color-scheme: dark;
+    }
+    .date-input:focus { border-color: var(--color-primary); }
+    .date-output {
+      margin-top: 14px;
+      font-size: 13px;
+      color: var(--color-text-muted);
+      min-height: 20px;
+    }
+    .date-output strong { color: var(--color-text); }
+
+    /* ── Accordion ──────────────────────────────────────────────────── */
+    .accordion-item {
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      margin-bottom: 8px;
+      overflow: hidden;
+    }
+    .accordion-item:last-child { margin-bottom: 0; }
+    .accordion-trigger {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      background: var(--color-surface-2);
+      border: none;
+      color: var(--color-text);
+      font-family: var(--font);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      text-align: left;
+      transition: background .15s;
+    }
+    .accordion-trigger:hover { background: var(--color-border); }
+    .accordion-arrow {
+      transition: transform .2s;
+      flex-shrink: 0;
+      color: var(--color-text-muted);
+    }
+    .accordion-item[open] .accordion-arrow { transform: rotate(180deg); }
+    .accordion-content {
+      padding: 14px 16px;
+      font-size: 14px;
+      color: var(--color-text-muted);
+      line-height: 1.6;
+      background: var(--color-surface);
+      border-top: 1px solid var(--color-border);
+    }
+
+    /* ── Drag to sort ───────────────────────────────────────────────── */
+    .sortable-list {
+      list-style: none;
+      padding: 0; margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .sortable-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: var(--color-surface-2);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      cursor: grab;
+      user-select: none;
+      transition: opacity .15s, box-shadow .15s, border-color .15s;
+      font-size: 14px;
+      color: var(--color-text);
+    }
+    .sortable-item:active { cursor: grabbing; }
+    .sortable-item.dragging {
+      opacity: .4;
+    }
+    .sortable-item.drag-over {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 1px var(--color-primary);
+    }
+    .drag-handle {
+      color: var(--color-text-muted);
+      flex-shrink: 0;
+    }
+    .sortable-badge {
+      margin-left: auto;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      background: var(--color-surface);
+      color: var(--color-text-muted);
+      border: 1px solid var(--color-border);
+    }
+    .sort-hint {
+      margin-top: 12px;
+      font-size: 12px;
+      color: var(--color-text-muted);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-layout">
+
+    <!-- ── Sidebar ─────────────────────────────────────────────────── -->
+    <aside class="sidebar" aria-label="Sidebar navigation">
+      <div class="sidebar-header">
+        <div class="sidebar-logo-mark" aria-hidden="true">A</div>
+        <span class="sidebar-logo-name">AdminKit</span>
+      </div>
+
+      <nav class="sidebar-nav" aria-label="Main navigation">
+        <span class="nav-section-label">Workspace</span>
+
+        <a href="/dashboard" class="nav-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Dashboard
+        </a>
+
+        <a href="/controls" class="nav-item active" aria-current="page">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="3"/><path d="M11 8h10M3 8H1"/><circle cx="16" cy="16" r="3"/><path d="M19 16h2M11 16H1"/></svg>
+          Playground
+        </a>
+
+        <a href="/reports" class="nav-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          Reports
+        </a>
+
+        <span class="nav-section-label">Settings</span>
+
+        <a href="#" class="nav-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+          Settings
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-badge">
+          <div class="user-avatar" id="user-avatar" aria-hidden="true">A</div>
+          <div class="user-info">
+            <div class="user-name" id="user-name-display">admin</div>
+            <div class="user-role">Administrator</div>
+          </div>
+          <button
+            class="btn-icon"
+            id="logout-button"
+            title="Sign out"
+            aria-label="Sign out"
+            data-testid="logout-button"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ── Main content ────────────────────────────────────────────── -->
+    <div class="main-content">
+
+      <header class="topbar">
+        <div>
+          <div class="page-title">Controls Playground</div>
+          <div class="page-subtitle">Interactive UI components for automation demonstration</div>
+        </div>
+      </header>
+
+      <main class="content-area">
+        <div class="controls-grid">
+
+          <!-- ── Sliders ──────────────────────────────────────────── -->
+          <div class="card card-full" data-testid="section-sliders">
+            <div class="ctrl-card-title">Range Sliders</div>
+
+            <div class="slider-row">
+              <span class="slider-label">Brightness</span>
+              <input
+                type="range" min="0" max="100" value="60"
+                class="slider-input"
+                data-testid="slider-brightness"
+                aria-label="Brightness"
+              />
+              <span class="slider-value" data-testid="slider-brightness-value">60</span>
+            </div>
+
+            <div class="slider-row">
+              <span class="slider-label">Volume</span>
+              <input
+                type="range" min="0" max="100" value="40"
+                class="slider-input"
+                data-testid="slider-volume"
+                aria-label="Volume"
+              />
+              <span class="slider-value" data-testid="slider-volume-value">40</span>
+            </div>
+
+            <div class="slider-row">
+              <span class="slider-label">Opacity</span>
+              <input
+                type="range" min="0" max="100" value="80"
+                class="slider-input"
+                data-testid="slider-opacity"
+                aria-label="Opacity"
+              />
+              <span class="slider-value" data-testid="slider-opacity-value">80</span>
+            </div>
+          </div>
+
+          <!-- ── Toggle switches ──────────────────────────────────── -->
+          <div class="card" data-testid="section-toggles">
+            <div class="ctrl-card-title">Toggle Switches</div>
+            <div class="toggle-list">
+
+              <div class="toggle-row">
+                <div class="toggle-info">
+                  <span class="toggle-name">Notifications</span>
+                  <span class="toggle-desc">Receive in-app alerts</span>
+                </div>
+                <button
+                  class="toggle-switch"
+                  role="switch"
+                  aria-checked="true"
+                  aria-label="Notifications"
+                  data-testid="toggle-notifications"
+                ><span class="toggle-thumb"></span></button>
+              </div>
+
+              <div class="toggle-row">
+                <div class="toggle-info">
+                  <span class="toggle-name">Auto-save</span>
+                  <span class="toggle-desc">Save changes automatically</span>
+                </div>
+                <button
+                  class="toggle-switch"
+                  role="switch"
+                  aria-checked="true"
+                  aria-label="Auto-save"
+                  data-testid="toggle-autosave"
+                ><span class="toggle-thumb"></span></button>
+              </div>
+
+              <div class="toggle-row">
+                <div class="toggle-info">
+                  <span class="toggle-name">Dark mode</span>
+                  <span class="toggle-desc">Use dark colour scheme</span>
+                </div>
+                <button
+                  class="toggle-switch"
+                  role="switch"
+                  aria-checked="false"
+                  aria-label="Dark mode"
+                  data-testid="toggle-darkmode"
+                ><span class="toggle-thumb"></span></button>
+              </div>
+
+              <div class="toggle-row">
+                <div class="toggle-info">
+                  <span class="toggle-name">Marketing emails</span>
+                  <span class="toggle-desc">Receive product updates</span>
+                </div>
+                <button
+                  class="toggle-switch"
+                  role="switch"
+                  aria-checked="false"
+                  aria-label="Marketing emails"
+                  data-testid="toggle-marketing"
+                ><span class="toggle-thumb"></span></button>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- ── Checkboxes ───────────────────────────────────────── -->
+          <div class="card" data-testid="section-checkboxes">
+            <div class="ctrl-card-title">Feature Flags</div>
+
+            <div class="checkbox-list">
+              <label class="checkbox-item">
+                <input
+                  type="checkbox"
+                  data-testid="checkbox-select-all"
+                  id="checkbox-select-all"
+                />
+                <strong>Select all features</strong>
+              </label>
+            </div>
+
+            <hr class="checkbox-divider" />
+
+            <div class="checkbox-list">
+              <label class="checkbox-item">
+                <input
+                  type="checkbox"
+                  data-testid="checkbox-analytics"
+                  class="feature-checkbox"
+                  value="analytics"
+                  checked
+                />
+                Analytics dashboard
+              </label>
+
+              <label class="checkbox-item">
+                <input
+                  type="checkbox"
+                  data-testid="checkbox-export"
+                  class="feature-checkbox"
+                  value="export"
+                  checked
+                />
+                CSV / JSON export
+              </label>
+
+              <label class="checkbox-item">
+                <input
+                  type="checkbox"
+                  data-testid="checkbox-api"
+                  class="feature-checkbox"
+                  value="api"
+                />
+                API access
+              </label>
+
+              <label class="checkbox-item">
+                <input
+                  type="checkbox"
+                  data-testid="checkbox-2fa"
+                  class="feature-checkbox"
+                  value="2fa"
+                />
+                Two-factor auth
+              </label>
+            </div>
+
+            <p class="checkbox-count">
+              <strong data-testid="checkbox-count">2</strong> of 4 features enabled
+            </p>
+          </div>
+
+          <!-- ── Radio buttons ────────────────────────────────────── -->
+          <div class="card" data-testid="section-radios">
+            <div class="ctrl-card-title">Radio Groups</div>
+
+            <div class="radio-group">
+              <div class="radio-group-label">Subscription Plan</div>
+              <div class="radio-list">
+                <label class="radio-item">
+                  <input type="radio" name="plan" value="free" data-testid="radio-plan-free" />
+                  Free — up to 3 seats
+                </label>
+                <label class="radio-item">
+                  <input type="radio" name="plan" value="pro" data-testid="radio-plan-pro" checked />
+                  Pro — up to 25 seats
+                </label>
+                <label class="radio-item">
+                  <input type="radio" name="plan" value="enterprise" data-testid="radio-plan-enterprise" />
+                  Enterprise — unlimited
+                </label>
+              </div>
+              <p class="radio-selection">
+                Selected: <strong data-testid="plan-selection">Pro</strong>
+              </p>
+            </div>
+
+            <div class="radio-group">
+              <div class="radio-group-label">Task Priority</div>
+              <div class="radio-list">
+                <label class="radio-item">
+                  <input type="radio" name="priority" value="low" data-testid="radio-priority-low" />
+                  Low
+                </label>
+                <label class="radio-item">
+                  <input type="radio" name="priority" value="medium" data-testid="radio-priority-medium" checked />
+                  Medium
+                </label>
+                <label class="radio-item">
+                  <input type="radio" name="priority" value="high" data-testid="radio-priority-high" />
+                  High
+                </label>
+                <label class="radio-item">
+                  <input type="radio" name="priority" value="critical" data-testid="radio-priority-critical" />
+                  Critical
+                </label>
+              </div>
+              <p class="radio-selection">
+                Selected: <strong data-testid="priority-selection">Medium</strong>
+              </p>
+            </div>
+          </div>
+
+          <!-- ── Select dropdowns ─────────────────────────────────── -->
+          <div class="card" data-testid="section-selects">
+            <div class="ctrl-card-title">Select Dropdowns</div>
+
+            <div class="select-group">
+              <label for="select-timezone">Time Zone</label>
+              <select id="select-timezone" class="form-select" data-testid="select-timezone">
+                <option value="">— choose —</option>
+                <option value="utc">UTC</option>
+                <option value="est">Eastern (EST/EDT)</option>
+                <option value="cst">Central (CST/CDT)</option>
+                <option value="mst">Mountain (MST/MDT)</option>
+                <option value="pst">Pacific (PST/PDT)</option>
+                <option value="gmt">London (GMT/BST)</option>
+                <option value="cet">Central Europe (CET)</option>
+                <option value="ist">India (IST)</option>
+                <option value="jst">Japan (JST)</option>
+                <option value="aest">Sydney (AEST)</option>
+              </select>
+              <div class="select-output">
+                Selected: <strong data-testid="timezone-output">—</strong>
+              </div>
+            </div>
+
+            <div class="select-group">
+              <label for="select-currency">Display Currency</label>
+              <select id="select-currency" class="form-select" data-testid="select-currency">
+                <option value="usd">USD — US Dollar</option>
+                <option value="eur">EUR — Euro</option>
+                <option value="gbp">GBP — British Pound</option>
+                <option value="jpy">JPY — Japanese Yen</option>
+                <option value="cad">CAD — Canadian Dollar</option>
+                <option value="aud">AUD — Australian Dollar</option>
+                <option value="chf">CHF — Swiss Franc</option>
+                <option value="inr">INR — Indian Rupee</option>
+              </select>
+              <div class="select-output">
+                Selected: <strong data-testid="currency-output">USD — US Dollar</strong>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- ── Textarea + stepper ───────────────────────────────── -->
+          <div class="card" data-testid="section-textarea">
+            <div class="ctrl-card-title">Text Area with Counter</div>
+            <div class="textarea-wrap">
+              <textarea
+                class="ctrl-textarea"
+                maxlength="200"
+                placeholder="Write a short bio…"
+                data-testid="textarea-bio"
+                aria-label="Bio"
+                aria-describedby="char-info"
+              ></textarea>
+            </div>
+            <div class="char-bar-wrap">
+              <div class="char-bar-fill" data-testid="char-bar"></div>
+            </div>
+            <div class="char-info" id="char-info">
+              <span>
+                <span data-testid="char-current">0</span> / 200 characters
+              </span>
+              <span data-testid="chars-remaining">200 left</span>
+            </div>
+            <div class="char-warning-msg" data-testid="char-warning" aria-live="polite"></div>
+          </div>
+
+          <!-- ── Number stepper + extras ──────────────────────────── -->
+          <div class="card" data-testid="section-stepper">
+            <div class="ctrl-card-title">Controls Sampler</div>
+            <div class="stepper-extra">
+
+              <div>
+                <div class="radio-group-label" style="margin-bottom:10px;">Quantity</div>
+                <div class="stepper-wrap">
+                  <div class="stepper-controls">
+                    <button
+                      class="stepper-btn"
+                      id="stepper-decrement"
+                      data-testid="stepper-decrement"
+                      aria-label="Decrease quantity"
+                    >−</button>
+                    <div class="stepper-display" data-testid="stepper-value" aria-live="polite">1</div>
+                    <button
+                      class="stepper-btn"
+                      id="stepper-increment"
+                      data-testid="stepper-increment"
+                      aria-label="Increase quantity"
+                    >+</button>
+                  </div>
+                  <span class="stepper-label">Min: 1 &nbsp;·&nbsp; Max: 99</span>
+                </div>
+              </div>
+
+              <div>
+                <div class="radio-group-label" style="margin-bottom:10px;">Accent Color</div>
+                <div class="color-pick-row">
+                  <label for="color-picker">Pick a colour</label>
+                  <input
+                    type="color"
+                    id="color-picker"
+                    value="#4338ca"
+                    data-testid="color-picker"
+                    aria-label="Accent color"
+                  />
+                  <span class="color-hex" data-testid="color-hex">#4338ca</span>
+                </div>
+              </div>
+
+              <div>
+                <div class="radio-group-label" style="margin-bottom:10px;">File Upload</div>
+                <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+                  <input
+                    type="file"
+                    data-testid="file-input"
+                    accept=".csv,.json,.txt"
+                    style="display:none"
+                    id="file-input"
+                  />
+                  <button
+                    class="btn btn-secondary"
+                    onclick="document.getElementById('file-input').click()"
+                    type="button"
+                    data-testid="file-trigger"
+                  >Choose file</button>
+                  <span class="select-output" style="margin:0">
+                    <span data-testid="file-name">No file chosen</span>
+                  </span>
+                </label>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- ── Date & Time ──────────────────────────────────────── -->
+          <div class="card card-full" data-testid="section-datetime">
+            <div class="ctrl-card-title">Date &amp; Time Inputs</div>
+            <div class="date-grid">
+              <div class="date-group">
+                <label for="input-date">Date</label>
+                <input
+                  type="date"
+                  id="input-date"
+                  class="date-input"
+                  data-testid="input-date"
+                />
+              </div>
+              <div class="date-group">
+                <label for="input-time">Time</label>
+                <input
+                  type="time"
+                  id="input-time"
+                  class="date-input"
+                  data-testid="input-time"
+                />
+              </div>
+              <div class="date-group">
+                <label for="input-datetime">Date &amp; Time</label>
+                <input
+                  type="datetime-local"
+                  id="input-datetime"
+                  class="date-input"
+                  data-testid="input-datetime"
+                />
+              </div>
+            </div>
+            <div class="date-output" data-testid="datetime-output" aria-live="polite"></div>
+          </div>
+
+          <!-- ── Accordion ────────────────────────────────────────── -->
+          <div class="card card-full" data-testid="section-accordion">
+            <div class="ctrl-card-title">Accordion</div>
+
+            <details class="accordion-item" data-testid="accordion-1">
+              <summary class="accordion-trigger" data-testid="accordion-trigger-1">
+                What is test automation?
+                <svg class="accordion-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+              </summary>
+              <div class="accordion-content" data-testid="accordion-content-1">
+                Test automation uses software tools to run tests against an application automatically,
+                comparing actual results to expected outcomes. It increases test coverage, speeds up
+                release cycles, and catches regressions early — especially valuable for repeated
+                regression suites.
+              </div>
+            </details>
+
+            <details class="accordion-item" data-testid="accordion-2">
+              <summary class="accordion-trigger" data-testid="accordion-trigger-2">
+                Why use Playwright for end-to-end testing?
+                <svg class="accordion-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+              </summary>
+              <div class="accordion-content" data-testid="accordion-content-2">
+                Playwright supports all major browsers (Chromium, Firefox, WebKit) from a single API,
+                offers auto-waiting to eliminate flaky tests, and provides first-class TypeScript support.
+                Its network interception, storage state, and parallelism features make it ideal for
+                modern web applications.
+              </div>
+            </details>
+
+            <details class="accordion-item" data-testid="accordion-3">
+              <summary class="accordion-trigger" data-testid="accordion-trigger-3">
+                What makes a good Page Object Model?
+                <svg class="accordion-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+              </summary>
+              <div class="accordion-content" data-testid="accordion-content-3">
+                A good POM encapsulates page-specific selectors and actions, hides implementation
+                details from test files, and exposes high-level methods like <code>addUser()</code>
+                or <code>getSummaryTotal()</code>. Tests become readable English, and selector changes
+                only require updates in one place.
+              </div>
+            </details>
+
+            <details class="accordion-item" data-testid="accordion-4">
+              <summary class="accordion-trigger" data-testid="accordion-trigger-4">
+                How do fixtures help with test isolation?
+                <svg class="accordion-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+              </summary>
+              <div class="accordion-content" data-testid="accordion-content-4">
+                Playwright fixtures set up preconditions (authenticated sessions, seeded data,
+                network mocks) before each test and tear them down afterwards. Because each test
+                gets fresh state, tests can run in any order and in parallel without interfering
+                with each other.
+              </div>
+            </details>
+
+          </div>
+
+          <!-- ── Drag to sort ─────────────────────────────────────── -->
+          <div class="card card-full" data-testid="section-sortable">
+            <div class="ctrl-card-title">Drag to Reorder</div>
+            <ul class="sortable-list" data-testid="sortable-list" aria-label="Reorderable list">
+
+              <li class="sortable-item" draggable="true" data-testid="sortable-item" data-id="1">
+                <svg class="drag-handle" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="9" cy="5" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+                Unit Testing
+                <span class="sortable-badge">Priority 1</span>
+              </li>
+
+              <li class="sortable-item" draggable="true" data-testid="sortable-item" data-id="2">
+                <svg class="drag-handle" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="9" cy="5" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+                Integration Testing
+                <span class="sortable-badge">Priority 2</span>
+              </li>
+
+              <li class="sortable-item" draggable="true" data-testid="sortable-item" data-id="3">
+                <svg class="drag-handle" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="9" cy="5" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+                End-to-End Testing
+                <span class="sortable-badge">Priority 3</span>
+              </li>
+
+              <li class="sortable-item" draggable="true" data-testid="sortable-item" data-id="4">
+                <svg class="drag-handle" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="9" cy="5" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+                Accessibility Testing
+                <span class="sortable-badge">Priority 4</span>
+              </li>
+
+              <li class="sortable-item" draggable="true" data-testid="sortable-item" data-id="5">
+                <svg class="drag-handle" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="9" cy="5" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+                Performance Testing
+                <span class="sortable-badge">Priority 5</span>
+              </li>
+
+            </ul>
+            <p class="sort-hint">Drag items up or down to reorder them</p>
+          </div>
+
+        </div><!-- /controls-grid -->
+      </main>
+    </div><!-- /main-content -->
+  </div><!-- /app-layout -->
+
+  <!-- Toast container -->
+  <div id="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+  <script src="/js/controls.js"></script>
+</body>
+</html>
