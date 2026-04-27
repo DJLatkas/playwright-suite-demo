@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.env
+playwright-report/
+blob-report/
+test-results/
+*.log
+.DS_Store
+handoff.md
+.claude/

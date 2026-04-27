@@ -1,0 +1,124 @@
+name: Playwright Tests
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# ── Job 1: Smoke — every push, fast feedback ──────────────────────────────────
+#
+# Runs @smoke on Chromium only. Should complete in ~30 seconds.
+# Purpose: confirm the app boots and critical paths are reachable before
+# a developer even opens a PR.
+
+jobs:
+  smoke:
+    name: Smoke (@smoke · chromium)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run smoke tests
+        run: npx playwright test --grep @smoke --project=chromium
+        env:
+          CI: true
+
+      - name: Upload smoke report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: smoke-report-${{ github.run_id }}
+          path: playwright-report/
+          retention-days: 7
+
+# ── Job 2: Critical — every PR, required status check ────────────────────────
+#
+# Runs @critical across all browser projects.
+# This job must pass before a PR can merge. A failure here means a core
+# user-facing flow is broken — auth, add user, save edit.
+# The HTML report artifact is the primary debugging tool shown in the demo.
+
+  critical:
+    name: Critical (@critical · all browsers)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Install all browsers
+        run: npx playwright install --with-deps
+
+      - name: Run critical tests
+        run: npx playwright test --grep @critical
+        env:
+          CI: true
+
+      - name: Upload critical report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: critical-report-${{ github.run_id }}
+          path: playwright-report/
+          retention-days: 14
+
+# ── Job 3: Full regression — PRs to main, after critical passes ───────────────
+#
+# Runs the complete @regression suite only when critical is green.
+# Keeps expensive cross-browser coverage out of feature branches while
+# ensuring nothing ships to main with a broken regression suite.
+
+  regression:
+    name: Full Regression (@regression · all browsers)
+    runs-on: ubuntu-latest
+    needs: critical
+    if: >
+      github.event_name == 'pull_request' &&
+      github.base_ref == 'main' &&
+      needs.critical.result == 'success'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Install all browsers
+        run: npx playwright install --with-deps
+
+      - name: Run regression suite
+        run: npx playwright test --grep @regression
+        env:
+          CI: true
+
+      - name: Upload regression report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: regression-report-${{ github.run_id }}
+          path: playwright-report/
+          retention-days: 30
